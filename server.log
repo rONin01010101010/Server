@@ -1,0 +1,6 @@
+
+> http_server@1.0.0 dev
+> npx tsc && node dist/index.js
+
+Listening on port 8080
+[NON-OK] GET /non-existent-path- Status: 404
