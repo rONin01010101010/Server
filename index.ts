@@ -33,9 +33,9 @@ app.post("/metrics", middlewareMetricsInc,(req:Request, res:Response) => {
 app.get("/reset", (req: Request, res: Response) => {
     let reset = num_req.fileserverHits =- num_req.fileserverHits  
     if(reset == 0){
-        res.statusCode
+        res.status(200)
     }  
-    res.send  
+    res.status(200) 
 })
 
 app.get("/healthz", (req: Request, res: Response) => {
@@ -46,6 +46,9 @@ app.get("/healthz", (req: Request, res: Response) => {
     console.log(err)
   } 
 })
+
+
+app.use("/app", express.static("./src/app"))
 app.use(middlewareLogResponses)
 app.listen(port, () => {
    console.log(`Listening on port ${port}`) 

@@ -6,9 +6,7 @@ const app: Express = express()
 
 
 export function middlewareMetricsInc(req: Request, res: Response, next: NextFunction){
-    //if there is a status of any kind increase the fileserver hits 
-    res.on('finish', () => {
-        num_req.fileserverHits += 1
-    })
+   //just increment fileserver hits  
+   res.send(num_req.fileserverHits += 1);
    next()
 }
