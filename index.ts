@@ -31,11 +31,12 @@ app.post("/metrics", middlewareMetricsInc,(req:Request, res:Response) => {
 
 //handler for reseting the hits 
 app.get("/reset", (req: Request, res: Response) => {
-    let reset = num_req.fileserverHits =- num_req.fileserverHits  
+/*     let reset = num_req.fileserverHits =- num_req.fileserverHits  
     if(reset == 0){
         res.status(200)
     }  
-    res.status(200) 
+    res.status(200) */
+  res.status(200).send("reset path responded") 
 })
 
 app.get("/healthz", (req: Request, res: Response) => {

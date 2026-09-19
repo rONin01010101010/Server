@@ -7,6 +7,6 @@ const app: Express = express()
 
 export function middlewareMetricsInc(req: Request, res: Response, next: NextFunction){
    //just increment fileserver hits  
-   res.send(num_req.fileserverHits += 1);
+   num_req.fileserverHits += 1;
    next()
 }
