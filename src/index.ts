@@ -44,14 +44,19 @@ app.get("/healthz", (req: Request, res: Response) => {
   } 
 })
 
- app.get("/reset", (req: Request, res: Response) => {
-  res.status(200).send("reset path responded") 
+
+app.get("/reset", (req: Request, res: Response) => {
+      num_req.fileserverHits *= 0 
+      if(num_req.fileserverHits == 0 ){
+      res.status(200) 
+      }
+    res.status(403).send("failed to reset")
 })
 
 
-app.use(middlewareLogResponses)
+
 app.use("/app", express.static("./src/app"))
 
 app.listen(port, () => {
-   console.log(`Listening on port ${port}`) 
+  console.log(`Listening on port ${port}`) 
 })

@@ -31,12 +31,11 @@ app.post("/metrics", middlewareMetricsInc,(req:Request, res:Response) => {
 
 //handler for reseting the hits 
 app.get("/reset", (req: Request, res: Response) => {
-/*     let reset = num_req.fileserverHits =- num_req.fileserverHits  
-    if(reset == 0){
-        res.status(200)
-    }  
-    res.status(200) */
-  res.status(200).send("reset path responded") 
+   num_req.fileserverHits *= 0
+   if(num_req.fileserverHits == 0){
+   res.status(200) 
+   }
+   res.status(403).send("hits not reset")
 })
 
 app.get("/healthz", (req: Request, res: Response) => {
@@ -50,7 +49,7 @@ app.get("/healthz", (req: Request, res: Response) => {
 
 
 app.use("/app", express.static("./src/app"))
-app.use(middlewareLogResponses)
+
 app.listen(port, () => {
    console.log(`Listening on port ${port}`) 
 });
