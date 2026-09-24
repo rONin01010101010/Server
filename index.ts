@@ -1,16 +1,18 @@
 import express , {Router, type Express , type Request, type Response, type NextFunction
 } from 'express'
-import { middlewareMetricsInc } from './src/routes.js' 
-import { APIConfig } from './src/config.js'
+//import { middlewareMetricsInc } from './routes.js' 
+import { APIConfig } from './src/config.ts'
 
 const app: Express = express()
 const port = 8080
+let num_req: APIConfig = {fileserverHits : 0}
 
 //middle to count responses called before static files are served 
-app.use(middlewareMetricsInc)
+app.use('/app', (req: Request, res: Response, next: NextFunction) => {
+  num_req['fileserverHits'] += 1;
+   next()
+})
 
-app.use("/app", express.static("./src/app"))
-let num_req: APIConfig = {fileserverHits : 0}
 
 
 function middlewareLogResponses(req: Request, res: Response, next: NextFunction){
@@ -23,20 +25,15 @@ function middlewareLogResponses(req: Request, res: Response, next: NextFunction)
   next()
 }
 
+
+
 //middle ware metrics that will log the number of req in the app
-app.post("/metrics", middlewareMetricsInc,(req:Request, res:Response) => {
-  let hits = middlewareMetricsInc;
-   res.send(`Hits: ${hits}`)
+app.get("/metrics",(req:Request, res:Response) => {
+     res.set("Content-Type", "text/plain; charset=utf-8")
+     res.send(`Hits: ${num_req.fileserverHits}`)
 })
 
-//handler for reseting the hits 
-app.get("/reset", (req: Request, res: Response) => {
-   num_req.fileserverHits *= 0
-   if(num_req.fileserverHits == 0){
-   res.status(200) 
-   }
-   res.status(403).send("hits not reset")
-})
+
 
 app.get("/healthz", (req: Request, res: Response) => {
   try{ 
@@ -48,9 +45,17 @@ app.get("/healthz", (req: Request, res: Response) => {
 })
 
 
-app.use("/app", express.static("./src/app"))
+app.get("/reset", (req: Request, res: Response) => {
+      num_req['fileserverHits'] = 0 
+       res.status(200).send('Reset successful')
+   
+})
 
+
+
+app.use("/app", express.static("./src/app"))
+app.use(middlewareLogResponses)
 app.listen(port, () => {
-   console.log(`Listening on port ${port}`) 
-});
+  console.log(`Listening on port ${port}`) 
+})
 

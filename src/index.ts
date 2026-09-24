@@ -1,6 +1,6 @@
 import express , {Router, type Express , type Request, type Response, type NextFunction
 } from 'express'
-import { middlewareMetricsInc } from './routes.js' 
+//import { middlewareMetricsInc } from './routes.js' 
 import { APIConfig } from './config.js'
 
 const app: Express = express()
@@ -9,7 +9,7 @@ let num_req: APIConfig = {fileserverHits : 0}
 
 //middle to count responses called before static files are served 
 app.use('/app', (req: Request, res: Response, next: NextFunction) => {
-  num_req.fileserverHits += 1;
+  num_req['fileserverHits'] += 1;
    next()
 })
 
@@ -46,17 +46,14 @@ app.get("/healthz", (req: Request, res: Response) => {
 
 
 app.get("/reset", (req: Request, res: Response) => {
-      num_req.fileserverHits *= 0 
-      if(num_req.fileserverHits == 0 ){
-      res.status(200) 
-      }
-    res.status(403).send("failed to reset")
+      num_req['fileserverHits'] = 0 
+      res.status(200).send('Reset successful') 
 })
 
 
 
 app.use("/app", express.static("./src/app"))
-
+app.use(middlewareLogResponses)
 app.listen(port, () => {
   console.log(`Listening on port ${port}`) 
 })
