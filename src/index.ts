@@ -28,14 +28,19 @@ function middlewareLogResponses(req: Request, res: Response, next: NextFunction)
 
 
 //middle ware metrics that will log the number of req in the app
-app.get("/metrics",(req:Request, res:Response) => {
-     res.set("Content-Type", "text/plain; charset=utf-8")
-     res.send(`Hits: ${num_req.fileserverHits}`)
+app.get("/admin/metrics",(req:Request, res:Response) => {
+     res.set("Content-Type", "text/html; charset=utf-8")
+     res.send(`<html>
+  <body>
+    <h1>Welcome, Chirpy Admin</h1>
+    <p>Chirpy has been visited ${num_req.fileserverHits} times!</p>
+  </body>
+</html>`)
 })
 
 
 
-app.get("/healthz", (req: Request, res: Response) => {
+app.get("/api/healthz", (req: Request, res: Response) => {
   try{ 
    res.set("Content-Type", "text/plain; charset=utf-8")
    return res.send('OK')
@@ -45,7 +50,7 @@ app.get("/healthz", (req: Request, res: Response) => {
 })
 
 
-app.get("/reset", (req: Request, res: Response) => {
+app.get("/admin/reset", (req: Request, res: Response) => {
       num_req['fileserverHits'] = 0 
       res.status(200).send('Reset successful') 
 })
