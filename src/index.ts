@@ -50,12 +50,28 @@ app.get("/api/healthz", (req: Request, res: Response) => {
 })
 
 
-app.get("/admin/reset", (req: Request, res: Response) => {
+app.post("/admin/reset", (req: Request, res: Response) => {
       num_req['fileserverHits'] = 0 
       res.status(200).send('Reset successful') 
 })
 
+app.post("/api/validate_chirp",(req: Request, res: Response) => {
+   const data = req.body; 
+   
+   JSON.stringify(data);
 
+   if(data.length <= 140){
+     res.send({
+      "body" : req.body,
+       "valid" : true
+     }).status(200)
+   }
+   
+   res.send({
+    "error": "Chirp too long"
+   })
+
+  })
 
 app.use("/app", express.static("./src/app"))
 app.use(middlewareLogResponses)
