@@ -1,7 +1,7 @@
 import express , {Router, type Express , type Request, type Response, type NextFunction
 } from 'express'
 //import { middlewareMetricsInc } from './routes.js' 
-import { APIConfig } from './src/config.ts'
+import { APIConfig } from './src/config.js'
 
 const app: Express = express()
 const port = 8080
@@ -28,14 +28,19 @@ function middlewareLogResponses(req: Request, res: Response, next: NextFunction)
 
 
 //middle ware metrics that will log the number of req in the app
-app.get("/metrics",(req:Request, res:Response) => {
-     res.set("Content-Type", "text/plain; charset=utf-8")
-     res.send(`Hits: ${num_req.fileserverHits}`)
+app.get("/admin/metrics",(req:Request, res:Response) => {
+     res.set("Content-Type", "text/html; charset=utf-8")
+     res.send(`<html>
+  <body>
+    <h1>Welcome, Chirpy Admin</h1>
+    <p>Chirpy has been visited ${num_req.fileserverHits} times!</p>
+  </body>
+</html>`)
 })
 
 
 
-app.get("/healthz", (req: Request, res: Response) => {
+app.get("/api/healthz", (req: Request, res: Response) => {
   try{ 
    res.set("Content-Type", "text/plain; charset=utf-8")
    return res.send('OK')
@@ -45,13 +50,40 @@ app.get("/healthz", (req: Request, res: Response) => {
 })
 
 
-app.get("/reset", (req: Request, res: Response) => {
+app.post("/admin/reset", (req: Request, res: Response) => {
       num_req['fileserverHits'] = 0 
-       res.status(200).send('Reset successful')
-   
+      res.status(200).send('Reset successful') 
 })
 
+app.post("/api/validate_chirp",(req: Request, res: Response) => {
+  type data = {
+    body : string
+  }
+  
+  type wr = {
+    error: string
+  }
+   type val = {
+    valid: boolean
+   }
+  
+   try{
+   const res_data = JSON.parse(req.body) as data
+   if(res_data.body.length <= 140){
+     const vald : val = {
+      valid: true
+     }  
+    res.status(200).send(vald.valid)
+   }
+   res.send({
+    "error": "Chirp is too long"
+   }) 
+  }catch(err){
+    const mess_err = err as wr;
+    res.send(mess_err.error)
+  }
 
+})
 
 app.use("/app", express.static("./src/app"))
 app.use(middlewareLogResponses)

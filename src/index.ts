@@ -56,22 +56,34 @@ app.post("/admin/reset", (req: Request, res: Response) => {
 })
 
 app.post("/api/validate_chirp",(req: Request, res: Response) => {
-   const data = req.body; 
-   
-   JSON.stringify(data);
-
-   if(data.length <= 140){
-     res.send({
-      "body" : req.body,
-       "valid" : true
-     }).status(200)
+  type data = {
+    body : string
+  }
+  
+  type wr = {
+    error: string
+  }
+   type val = {
+    valid: boolean
    }
-   
+  
+   try{
+   const res_data = JSON.parse(req.body) as data
+   if(res_data.body.length <= 140){
+     const vald : val = {
+      valid: true
+     }  
+    res.status(200).send(vald.valid)
+   }
    res.send({
-    "error": "Chirp too long"
-   })
+    "error": "Chirp is too long"
+   }) 
+  }catch(err){
+    const mess_err = err as wr;
+    res.send(mess_err.error)
+  }
 
-  })
+})
 
 app.use("/app", express.static("./src/app"))
 app.use(middlewareLogResponses)
