@@ -73,7 +73,7 @@ app.post("/api/validate_chirp",(req: Request, res: Response) => {
      const vald : val = {
       valid: true
      }  
-    res.status(200).send(vald.valid)
+    res.status(200).send(JSON.stringify(vald))
    }
    res.send({
     "error": "Chirp is too long"
