@@ -13,7 +13,7 @@ app.use('/app', (req: Request, res: Response, next: NextFunction) => {
    next()
 })
 
-
+app.use(express.json())
 
 function middlewareLogResponses(req: Request, res: Response, next: NextFunction){
  res.on('finish', () => {
@@ -67,22 +67,19 @@ app.post("/api/validate_chirp",(req: Request, res: Response) => {
     valid: boolean
    }
   
-   try{
-   const res_data = JSON.parse(req.body) as data
+   
+   const res_data = req.body
    if(res_data.body.length <= 140){
      const vald : val = {
       valid: true
      }  
-    res.status(200).send(JSON.stringify(vald))
+    res.status(200).send(vald)
    }
-   res.send({
+  
+    res.send({
     "error": "Chirp is too long"
    }).status(400) 
-  }catch(err){
-    const mess_err = err as wr;
-    res.send(mess_err.error)
-  }
-
+  
 })
 
 app.use("/app", express.static("./src/app"))
