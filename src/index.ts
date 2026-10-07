@@ -56,9 +56,7 @@ app.post("/admin/reset", (req: Request, res: Response) => {
 })
 
 app.post("/api/validate_chirp",(req: Request, res: Response) => {
-  type data = {
-    body : string
-  }
+ 
   
   type wr = {
     error: string
@@ -67,18 +65,18 @@ app.post("/api/validate_chirp",(req: Request, res: Response) => {
     valid: boolean
    }
   
-   
    const res_data = req.body
+   
    if(res_data.body.length <= 140){
      const vald : val = {
       valid: true
      }  
-    res.status(200).send(vald)
+   return res.status(200).send(vald)
    }
   
-    res.send({
+   return res.status(400).send({
     "error": "Chirp is too long"
-   }).status(400) 
+   }) 
   
 })
 
