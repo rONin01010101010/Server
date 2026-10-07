@@ -68,7 +68,21 @@ app.post("/api/validate_chirp",(req: Request, res: Response) => {
    const res_data = req.body
    
    if(res_data.body.length <= 140){
-     const vald : val = {
+      
+      let clean: string[] = res_data.body.split(" ")
+      
+      for(let word in clean){
+        word.toLowerCase()
+        if(word == 'kerfuffle' || word == 'sharbert' || word == 'fornax'){
+           word = '****'
+           res.status(200).send({
+            "cleanedBody": clean.join()
+           })
+        }
+      }
+
+    
+    const vald : val = {
       valid: true
      }  
    return res.status(200).send(vald)
