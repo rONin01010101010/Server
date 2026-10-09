@@ -56,9 +56,7 @@ app.post("/admin/reset", (req: Request, res: Response) => {
 })
 
 app.post("/api/validate_chirp",(req: Request, res: Response) => {
-  type data = {
-    body : string
-  }
+ 
   
   type wr = {
     error: string
@@ -67,24 +65,35 @@ app.post("/api/validate_chirp",(req: Request, res: Response) => {
     valid: boolean
    }
   
-   try{
    const res_data = req.body
+   
    if(res_data.body.length <= 140){
-     const vald : val = {
-      valid: true
-     }  
-    res.status(200).send(JSON.stringify(vald))
-   }
-   res.send({
+      
+      let clean: string[] = res_data.body.split(" ")
+      
+      if(res_data.body.toLowerCase().includes('kerfuffle')){
+         res_data.body.replace('kerfuffle', '****')
+      }
+        
+        if(res_data.body.toLowerCase().includes('sharbert')){
+         res_data.body.replace('sharbert', '****')
+      }
+  
+         if(res_data.body.toLowerCase().includes('fornax')){
+         res_data.body.replace('fornax', '****')
+     
+         return res_data.status(200).send({
+          "cleanedBody" : res_data.body
+         })  
+         
+       } 
+
+    }
+   return res.status(400).send({
     "error": "Chirp is too long"
-   }).status(400) 
-  }catch(err){
-    const mess_err = err as wr;
-    res.send(mess_err.error).status(400)
-  }
-
+   }) 
+  
 })
-
 app.use("/app", express.static("./src/app"))
 app.use(middlewareLogResponses)
 app.listen(port, () => {
