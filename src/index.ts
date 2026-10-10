@@ -55,7 +55,7 @@ app.post("/admin/reset", (req: Request, res: Response) => {
       res.status(200).send('Reset successful') 
 })
 
-/* app.post("/api/validate_chirp",(req: Request, res: Response) => {
+app.post("/api/validate_chirp",(req: Request, res: Response) => {
  
   
   type wr = {
@@ -69,27 +69,22 @@ app.post("/admin/reset", (req: Request, res: Response) => {
    
    if(res_data.body.length <= 140){
       
-      let clean: string[] = res_data.body.split(" ")
-      
-      for(let word in clean){
-        word.toLowerCase()
-        if(word == 'kerfuffle' || word == 'sharbert' || word == 'fornax'){
-          clean.join(" ").replace(word, '****')
-          return res.status(200).send({
-            "cleanedBody": JSON.parse(clean.join(" "))
-           })
-        }
-      }
-       return res.status(200).send({
-        "cleanedBody": clean.join(" ")
-       })
+      let clean: string[] = res_data.body.split(" ") 
+    
+      return res.status(200).send({
+        "cleanedBody":
+        clean.map(word => 
+        word.toLowerCase().replace('\b(?:kerfuffle|sharbert|fornax)\b', '****')
+      ).join(" ")
+
+    })
     } 
    return res.status(400).send({
     "error": "Chirp is too long"
    }) 
   
-}) */
-app.post("/api/validate_chirp",(req: Request, res: Response) => {
+})
+/* app.post("/api/validate_chirp",(req: Request, res: Response) => {
  
   
   type wr = {
@@ -107,21 +102,28 @@ app.post("/api/validate_chirp",(req: Request, res: Response) => {
        
       if(res_data.body.toLowerCase().includes('kerfuffle')){
          update.concat(res_data.body.replace('kerfuffle', '****'))
-         
+          return res.status(200).send({
+          "cleanedBody" :  update.concat(res_data.body.replace('kerfuffle', '****'))
+
+         })
         
       }
         
         if(res_data.body.toLowerCase().includes('sharbert')){
          update.concat(res_data.body.replace('sharbert', '****'))
          return res.status(200).send({
-          "cleanedBody" : update
+          "cleanedBody" :   update.concat(res_data.body.replace('sharbert', '****'))
+
          })
          
         }
   
          if(res_data.body.toLowerCase().includes('fornax')){
          update.concat(res_data.body.replace('fornax', '****'))
-        
+           return res.status(200).send({
+          "cleanedBody" :  update.concat(res_data.body.toLowerCase().replace('fornax', '****'))
+ 
+         }) 
         }
          
          
@@ -132,9 +134,9 @@ app.post("/api/validate_chirp",(req: Request, res: Response) => {
        }
    return res.status(400).send({
     "error": "Chirp is too long"
-   }) 
+   }) */ 
   
-})
+//})
 app.use("/app", express.static("./src/app"))
 app.use(middlewareLogResponses)
 app.listen(port, () => {
