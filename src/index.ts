@@ -100,29 +100,36 @@ app.post("/api/validate_chirp",(req: Request, res: Response) => {
    }
   
    const res_data = req.body
-   
+   let update: string = ""
    if(res_data.body.length <= 140){
       
       let clean: string[] = res_data.body.split(" ")
-      
+       
       if(res_data.body.toLowerCase().includes('kerfuffle')){
-         res_data.body.replace('kerfuffle', '****')
+         update.concat(res_data.body.replace('kerfuffle', '****'))
+         
+        
       }
         
         if(res_data.body.toLowerCase().includes('sharbert')){
-         res_data.body.replace('sharbert', '****')
-      }
+         update.concat(res_data.body.replace('sharbert', '****'))
+         return res.status(200).send({
+          "cleanedBody" : update
+         })
+         
+        }
   
          if(res_data.body.toLowerCase().includes('fornax')){
-         res_data.body.replace('fornax', '****')
-     
-         return res_data.status(200).send({
-          "cleanedBody" : res_data.body
-         })  
+         update.concat(res_data.body.replace('fornax', '****'))
+        
+        }
          
-       } 
-       
-    }
+         
+          return res.status(200).send({
+          "cleanedBody" : res_data.body
+         }) 
+         
+       }
    return res.status(400).send({
     "error": "Chirp is too long"
    }) 

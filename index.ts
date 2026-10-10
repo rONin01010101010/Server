@@ -81,12 +81,13 @@ app.post("/api/validate_chirp",(req: Request, res: Response) => {
   
          if(res_data.body.toLowerCase().includes('fornax')){
          res_data.body.replace('fornax', '****')
-     
-         return res_data.status(200).send({
+         }
+         
+         return res.status(200).send({
           "cleanedBody" : res_data.body
          })  
          
-       } 
+        
 
     }
    return res.status(400).send({
