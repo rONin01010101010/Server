@@ -25,7 +25,13 @@ function middlewareLogResponses(req: Request, res: Response, next: NextFunction)
   next()
 }
 
-
+//error middleware function 
+function errorHandler(err: Error, req: Request, res: Response, next: NextFunction){
+console.log(`this is the err`,err)
+res.status(500).json({
+  error: "Something went wrong on our end"
+})
+}
 
 //middle ware metrics that will log the number of req in the app
 app.get("/admin/metrics",(req:Request, res:Response) => {
@@ -70,14 +76,19 @@ app.post("/api/validate_chirp",(req: Request, res: Response) => {
    if(res_data.body.length <= 140){
       
       let clean: string[] = res_data.body.split(" ") 
-    
-      return res.status(200).send({
-        "cleanedBody":
-        clean.map(word => 
-        word.toLowerCase().replace('\b(?:kerfuffle|sharbert|fornax)\b', '****')
-      ).join(" ")
+      let pattern = /\b(?:[Kk]erfuffle|KERFUFFLE|[Ss]harbert|SHARBERT|[Ff]ornax|FORNAX)\b/
 
-    })
+      for(let i = 0; i < clean.length; i++){
+        if(pattern.test(clean[i])){
+           clean[i] = '****'
+        }
+         clean.join(" ")
+      }
+
+      return res.status(200).send({
+        "cleanedBody": clean.join(" ")
+
+    })    
     } 
    return res.status(400).send({
     "error": "Chirp is too long"
