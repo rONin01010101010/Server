@@ -2,6 +2,7 @@ import express , {Router, type Express , type Request, type Response, type NextF
 } from 'express'
 //import { middlewareMetricsInc } from './routes.js' 
 import { APIConfig } from './config.js'
+import {Forbidden, NotFound, BadRequest, Unauthorized} from './errclasses.js'
 
 const app: Express = express()
 const port = 8080
@@ -28,9 +29,31 @@ function middlewareLogResponses(req: Request, res: Response, next: NextFunction)
 //error middleware function 
 function errorHandler(err: Error, req: Request, res: Response, next: NextFunction){
 console.log(`this is the err`,err)
+
+if(err instanceof NotFound){
+  res.status(404).json({error: err.message})
+}
+
+if(err instanceof BadRequest){
+  res.status(400).json({error: err.message})
+}
+
+if(err instanceof Unauthorized){
+  res.status(401).json({error: err.message})
+}
+
+if(err instanceof Forbidden){
+  res.status(403).json({error: err.message})
+}
+
+
 res.status(500).json({
   error: "Something went wrong on our end"
 })
+
+next(err)
+
+
 }
 
 //middle ware metrics that will log the number of req in the app
@@ -61,7 +84,7 @@ app.post("/admin/reset", (req: Request, res: Response) => {
       res.status(200).send('Reset successful') 
 })
 
-app.post("/api/validate_chirp",(req: Request, res: Response) => {
+app.post("/api/validate_chirp", async (req: Request, res: Response, next: NextFunction) => {
  
   
   type wr = {
@@ -70,8 +93,9 @@ app.post("/api/validate_chirp",(req: Request, res: Response) => {
    type val = {
     valid: boolean
    }
-  
+  try {
    const res_data = req.body
+   
    
    if(res_data.body.length <= 140){
       
@@ -90,66 +114,16 @@ app.post("/api/validate_chirp",(req: Request, res: Response) => {
 
     })    
     } 
-   return res.status(400).send({
-    "error": "Chirp is too long"
-   }) 
-  
-})
-/* app.post("/api/validate_chirp",(req: Request, res: Response) => {
- 
-  
-  type wr = {
-    error: string
+  }catch(err){
+   return next(err) 
   }
-   type val = {
-    valid: boolean
-   }
-  
-   const res_data = req.body
-   let update: string = ""
-   if(res_data.body.length <= 140){
-      
-      let clean: string[] = res_data.body.split(" ")
-       
-      if(res_data.body.toLowerCase().includes('kerfuffle')){
-         update.concat(res_data.body.replace('kerfuffle', '****'))
-          return res.status(200).send({
-          "cleanedBody" :  update.concat(res_data.body.replace('kerfuffle', '****'))
-
-         })
-        
-      }
-        
-        if(res_data.body.toLowerCase().includes('sharbert')){
-         update.concat(res_data.body.replace('sharbert', '****'))
-         return res.status(200).send({
-          "cleanedBody" :   update.concat(res_data.body.replace('sharbert', '****'))
-
-         })
-         
-        }
-  
-         if(res_data.body.toLowerCase().includes('fornax')){
-         update.concat(res_data.body.replace('fornax', '****'))
-           return res.status(200).send({
-          "cleanedBody" :  update.concat(res_data.body.toLowerCase().replace('fornax', '****'))
  
-         }) 
-        }
-         
-         
-          return res.status(200).send({
-          "cleanedBody" : res_data.body
-         }) 
-         
-       }
-   return res.status(400).send({
-    "error": "Chirp is too long"
-   }) */ 
-  
-//})
+   })
+
 app.use("/app", express.static("./src/app"))
 app.use(middlewareLogResponses)
+app.use(errorHandler) //error handler
+
 app.listen(port, () => {
   console.log(`Listening on port ${port}`) 
 })
