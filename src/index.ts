@@ -51,9 +51,6 @@ res.status(500).json({
   error: "Something went wrong on our end"
 })
 
-next(err)
-
-
 }
 
 //middle ware metrics that will log the number of req in the app
@@ -113,11 +110,16 @@ app.post("/api/validate_chirp", async (req: Request, res: Response, next: NextFu
         "cleanedBody": clean.join(" ")
 
     })    
-    } 
+    }
+
   }catch(err){
    return next(err) 
   }
- 
+  
+res.status(400).json({
+  "error": "Chirp is too long. Max length is 140"
+})
+next('errorHandler')
    })
 
 app.use("/app", express.static("./src/app"))
